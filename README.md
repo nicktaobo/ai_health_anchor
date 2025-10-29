@@ -1,10 +1,9 @@
+### 运行测试
+anchor test 
+
 
 ### 运行ws 监听链上交易记录
 npx ts-node tests/ws.ts
-
-
-
-
 
 ### 升级合约
 anchor upgrade
