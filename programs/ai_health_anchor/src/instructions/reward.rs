@@ -1,0 +1,68 @@
+use anchor_lang::prelude::*;
+
+use crate::{error::CustomErrorCode, state::*};
+
+pub fn reward(ctx: Context<Reward>, usdt_amount: u64) -> Result<()> {
+    let user_account = &mut ctx.accounts.user_account;
+    let game_config = &mut ctx.accounts.game_config;
+    require_eq!(game_config.authority, ctx.accounts.authority.key(), CustomErrorCode::InvalidAuthority);
+    user_account.total_usdt_earned = user_account.total_usdt_earned.checked_add(usdt_amount).unwrap();
+    Ok(())
+}
+
+pub fn reward_han(ctx: Context<RewardHan>, han_amount: u64) -> Result<()> {
+    let user_account = &mut ctx.accounts.user_account;
+    let game_config = &mut ctx.accounts.game_config;
+    require_eq!(game_config.authority, ctx.accounts.authority.key(), CustomErrorCode::InvalidAuthority);
+    user_account.total_han_earned = user_account.total_han_earned.checked_add(han_amount).unwrap();
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct Reward<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    pub user: SystemAccount<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"user_account", user.key().as_ref()],
+        bump = user_account.bump,
+    )]
+    pub user_account: Account<'info, UserAccount>,
+
+    #[account(
+        mut,
+        seeds = [b"game_config"],
+        bump = game_config.bump,
+    )]
+    pub game_config: Account<'info, GameConfig>,
+
+    pub system_program: Program<'info, System>,
+
+}
+
+#[derive(Accounts)]
+pub struct RewardHan<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    pub user: SystemAccount<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"user_account", user.key().as_ref()],
+        bump = user_account.bump,
+    )]
+    pub user_account: Account<'info, UserAccount>,
+
+    #[account(
+        mut,
+        seeds = [b"game_config"],
+        bump = game_config.bump,
+    )]
+    pub game_config: Account<'info, GameConfig>,
+
+    pub system_program: Program<'info, System>,
+}
