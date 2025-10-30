@@ -4,7 +4,7 @@ use crate::{error::CustomErrorCode, state::*};
 
 pub fn reward(ctx: Context<Reward>, usdt_amount: u64) -> Result<()> {
     let user_account = &mut ctx.accounts.user_account;
-    let game_config = &mut ctx.accounts.game_config;
+    let game_config  = &mut ctx.accounts.game_config;
     require_eq!(game_config.authority, ctx.accounts.authority.key(), CustomErrorCode::InvalidAuthority);
     user_account.total_usdt_earned = user_account.total_usdt_earned.checked_add(usdt_amount).unwrap();
     Ok(())
