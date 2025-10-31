@@ -6,7 +6,6 @@ use crate::constants::*;
 
 pub fn start(ctx: Context<START>) -> Result<()> {
     let game_config = &mut ctx.accounts.game_config;
-    require_eq!(game_config.authority, ctx.accounts.authority.key(), CustomErrorCode::InvalidAuthority);
     if game_config.state != NONSTART_STATE && game_config.state != END_STATE {
         return Err(CustomErrorCode::InvalidState.into());
     }
@@ -31,7 +30,10 @@ pub struct START<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        has_one = authority @ CustomErrorCode::InvalidAuthority,
+    )]
     pub game_config: Account<'info, GameConfig>,
 
 }

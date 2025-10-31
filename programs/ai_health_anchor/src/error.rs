@@ -31,4 +31,7 @@ pub enum CustomErrorCode {
 
     #[msg("Over end time")]
     OverEndTime,
+
+    #[msg("Not over end time")]
+    NotOverEndTime,
 }

@@ -4,16 +4,17 @@ import type { AiHealthAnchor } from "../target/types/ai_health_anchor";
 import { clusterApiUrl, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import * as anchor from "@coral-xyz/anchor";
+import { BUYER_PATH, DEPLOYER_PATH } from "../.env/env";
 
 
-// local 环境变量
-// const entryPoint = "http://localhost:8899";
-// const { usdt_mint, han_mint} = localAccount();
+// local env variables
+const entryPoint = "http://localhost:8899";
+// devnet env variables
+// const entryPoint = clusterApiUrl("devnet");
+const deployer_path = DEPLOYER_PATH;
+const buyer_path = BUYER_PATH;
 
 
-// devnet 环境变量
-const entryPoint = clusterApiUrl("devnet");
-// const entryPoint = "https://devnet.helius-rpc.com/?api-key=4ed07482-2788-48a1-8a22-a99cce9fd98e"
 
 const { deployer } = initUsers();
 
@@ -24,9 +25,6 @@ export function covertStringToUint8array(str: string): Uint8Array {
 
 
 export function initUsers(): { deployer: Keypair, buyer: Keypair } {
-  const deployer_path = "/Users/tim/.config/solana/ANU1sBoytR2a8tpvMFygMXg5M6XZipyiZVwrhwUmKvQV.json";
-  const buyer_path = "/Users/tim/.config/solana/TimMVWPtXAAgnZpSVG2oQkznfknRtMiXJdcqhFfLXWd.json";
-
   const deployer = Keypair.fromSecretKey(new Uint8Array(JSON.parse(fs.readFileSync(deployer_path, "utf8"))));
   const buyer = Keypair.fromSecretKey(new Uint8Array(JSON.parse(fs.readFileSync(buyer_path, "utf8"))));
 
@@ -52,8 +50,8 @@ export function devAccount(){
 }
 
 export function localAccount(){
-  const usdt_mint = new PublicKey("CwYkX2jsy7sqMsZSbzDeoqNykfUh5XmcSY8PnUoPZnfr");
-  const han_mint = new PublicKey("BPvog6H5wDep8zbgULCatGcAUkfKXryvzdDigpbaDJqo");
+  const usdt_mint = new PublicKey("CFeicP7hjQWMn92M6UGJQ15S2nwUVcx1xvPRHBbPVsaB");
+  const han_mint = new PublicKey("7Rf8RpW2Xsur5jtqSSxKzVe8JTXtPLMadck26pbdPQuL");
   return { usdt_mint, han_mint };
 }
 

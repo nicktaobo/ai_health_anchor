@@ -1,20 +1,28 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
-import { init, initUsers, localAccount } from "./common";
+import { init} from "./common";
 import * as anchor from "@coral-xyz/anchor";
 import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 
-const { connection, wallet, provider, program } = init();
+const { connection, program } = init();
 
-const { deployer, buyer } = initUsers();
 
-const { usdt_mint, han_mint } = localAccount();
+export async function fetchGameConfig() {
+    const [gameConfig] = PublicKey.findProgramAddressSync(
+        [Buffer.from("game_config")],
+        program.programId
+      );
+    const info = await connection.getAccountInfo(gameConfig, "confirmed");
+    console.log("info", JSON.stringify(info, null, 2));
+    console.log("game_config", gameConfig.toBase58(), "len=", info?.data.length);
+}
+
 
 export async function fetchConfig() {
     let game_config: PublicKey;
     [game_config] = PublicKey.findProgramAddressSync(
         [
-            Buffer.from("game_config"),
+            Buffer.from("game_config")
         ],
         program.programId
     );
@@ -102,12 +110,12 @@ export async function getTokenBalance(
 ): Promise<number> {
     try {
         const info = await connection.getTokenAccountBalance(tokenAccount);
-        if (info.value.uiAmount == null) throw new Error('未找到余额');
-        // console.log('余额 (使用 Solana-Web3.js): ', info.value.uiAmount);
+        if (info.value.uiAmount == null) throw new Error('token balance not found');
+        // console.log('token balance: ', info.value.uiAmount);
         console.log('tokenAccount: ', tokenAccount.toBase58(), ' token balance: ', JSON.stringify(info, null, 2));
         return info.value.uiAmount;
     } catch (error) {
-        console.error("获取代币余额失败:", error);
+        console.error("get token balance failed:", error);
         return 0;
     }
 }
@@ -123,7 +131,8 @@ function getBuyerTokenAccount(user: Keypair, mint: PublicKey): PublicKey {
     return user_token_account;
 }
 
-// fetchConfig();
+// fetchGameConfig();
+fetchConfig();
 // fetchAllUser();
 // fetchUserAccount(buyer);
 

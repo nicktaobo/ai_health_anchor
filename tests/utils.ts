@@ -1,5 +1,5 @@
 import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, sendAndConfirmTransaction,  Transaction } from "@solana/web3.js"
-import { createMint, createTransferInstruction, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo, TOKEN_PROGRAM_ID } from "@solana/spl-token"
+import { ASSOCIATED_TOKEN_PROGRAM_ID, createMint, createTransferInstruction, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import * as anchor from "@coral-xyz/anchor";
 
 export async function getTokenBalance(
@@ -16,6 +16,27 @@ export async function getTokenBalance(
     console.error("获取代币余额失败:", error);
     return 0;
   }
+}
+
+
+
+export async function InitTokenAccount(connection: Connection, deployer:Keypair, user: PublicKey, mint: PublicKey): Promise<PublicKey> {
+  const token_account = await getOrCreateAssociatedTokenAccount(
+      connection,
+      deployer,
+      mint,
+      user,
+      false,
+      "confirmed",
+      { skipPreflight: false },
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+  );
+  console.info("token_account", token_account);
+  let tx = await mintTo(connection, deployer, mint, token_account.address, deployer, 1000000_000000, [], { skipPreflight: false }, TOKEN_PROGRAM_ID);
+  console.info("tx", tx);
+
+  return token_account.address;
 }
 
 
@@ -53,7 +74,7 @@ export async function transferSol(
       lamports: amount * LAMPORTS_PER_SOL,
     })
   );
-  const commitTxSignature = await anchor.web3.sendAndConfirmTransaction(connection, commitTx, [from], {skipPreflight: true, commitment: "finalized"});
+  const commitTxSignature = await anchor.web3.sendAndConfirmTransaction(connection, commitTx, [from], {skipPreflight: true, commitment: "confirmed"});
   console.log("commitTxSignature", commitTxSignature);
 }
 
@@ -94,61 +115,6 @@ export async function transferToken(connection: Connection, from: Keypair, to: P
 
 
 
-export async function InitTokenAccount(connection: Connection, from:Keypair, toWallet: Keypair, mint: PublicKey) {
-    // const fromAirdropSignature = await connection.requestAirdrop(
-    //     from.publicKey,
-    //     LAMPORTS_PER_SOL,
-    //   );
-    //   // Wait for airdrop confirmation
-    //   await connection.confirmTransaction(fromAirdropSignature);
-    
-      // Generate a new wallet to receive newly minted token
-    //   const toWallet = Keypair.generate();
-    
-    
-      // Get the token account of the fromWallet Solana address, if it does not exist, create it
-      const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        from,
-        mint,
-        from.publicKey,
-      );
-    
-      //get the token account of the toWallet Solana address, if it does not exist, create it
-      const toTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        from,
-        mint,
-        toWallet.publicKey,
-      );
-    
-      // Minting 1 new token to the "fromTokenAccount" account we just returned/created
-      await mintTo(
-        connection,
-        from,
-        mint,
-        fromTokenAccount.address,
-        from.publicKey,
-        1000000000, // it's 1 token, but in lamports
-        [],
-      );
-    
-      // Add token transfer instructions to transaction
-      const transaction = new Transaction().add(
-        createTransferInstruction(
-          fromTokenAccount.address,
-          toTokenAccount.address,
-          from.publicKey,
-          1,
-        ),
-      );
-    
-      // Sign transaction, broadcast, and confirm
-      await sendAndConfirmTransaction(connection, transaction, [from]);
-
-      return { fromTokenAccount, toTokenAccount};
-}
-
 function findAta(publicKey: PublicKey, mint: PublicKey): PublicKey {
   let ata = getAssociatedTokenAddressSync(
     mint,
@@ -161,3 +127,40 @@ function findAta(publicKey: PublicKey, mint: PublicKey): PublicKey {
 }
 
 findAta(new PublicKey("EzSgWjaQ6A7dNKDtjYCuziMXqAs2vvc4f9rhfxM6JsuG"), new PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"));
+
+
+export async function skipBlockhash(connection: anchor.web3.Connection, deployer: Keypair): Promise<void> {
+  let blockhash = await connection.getLatestBlockhash();
+  let commitTx  = new anchor.web3.Transaction(
+    {
+      feePayer: deployer.publicKey,
+      blockhash: blockhash.blockhash,
+      lastValidBlockHeight: blockhash.lastValidBlockHeight,
+    }
+  ).add(
+    anchor.web3.SystemProgram.transfer({
+      fromPubkey: deployer.publicKey,
+      toPubkey: deployer.publicKey,
+      lamports: 1000 * LAMPORTS_PER_SOL,
+    })
+  );
+  let signature = await anchor.web3.sendAndConfirmTransaction(connection, commitTx, [deployer], {skipPreflight: true, commitment: "confirmed"});
+}
+
+export async function skipBlockhashFinalized(connection: anchor.web3.Connection, deployer: Keypair): Promise<void> {
+  let blockhash = await connection.getLatestBlockhash();
+  let commitTx  = new anchor.web3.Transaction(
+    {
+      feePayer: deployer.publicKey,
+      blockhash: blockhash.blockhash,
+      lastValidBlockHeight: blockhash.lastValidBlockHeight,
+    }
+  ).add(
+    anchor.web3.SystemProgram.transfer({
+      fromPubkey: deployer.publicKey,
+      toPubkey: deployer.publicKey,
+      lamports: 1000 * LAMPORTS_PER_SOL,
+    })
+  );
+  let signature = await anchor.web3.sendAndConfirmTransaction(connection, commitTx, [deployer], {skipPreflight: true, commitment: "finalized"});
+}

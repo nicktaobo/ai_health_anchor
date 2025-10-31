@@ -1,5 +1,6 @@
 // standard-ws-pump.ts
 import WebSocket from 'ws';
+import { HELIUS_WSS_URL, PROGRAM_ID } from '../.env/env';
 
 // Configuration
 const MAX_RETRIES = 5;
@@ -12,8 +13,7 @@ let subscriptionId: number | null = null;
 let ws: WebSocket;
 
 function connect() {
-//   ws = new WebSocket(`wss://mainnet.helius-rpc.com/?api-key=4ed07482-2788-48a1-8a22-a99cce9fd98e`);
-  ws = new WebSocket(`wss://devnet.helius-rpc.com/?api-key=4ed07482-2788-48a1-8a22-a99cce9fd98e`);
+  ws = new WebSocket(HELIUS_WSS_URL);
 
   // Function to send a request to the WebSocket server
   function sendRequest(ws: WebSocket): void {
@@ -23,7 +23,7 @@ function connect() {
       "method": "logsSubscribe",
       "params": [
         {
-          "mentions": ["CumeNZ6e9FA3gLUmj9nx25L9nMtv4iPnX52Nx5pahWp2"]
+          "mentions": [PROGRAM_ID]
         }
       ]
     };
@@ -65,7 +65,7 @@ function connect() {
       if (messageObj.params && messageObj.params.result) {
         const logData = messageObj.params.result;
         console.log('Received log data:', JSON.stringify(logData, null, 2));
-        
+
         // Extract the transaction signature if available
         if (logData.signature) {
           console.log('Transaction signature:', logData.signature);
@@ -99,7 +99,7 @@ function reconnect() {
   }
 
   const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-  console.log(`Attempting to reconnect in ${delay/1000} seconds... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+  console.log(`Attempting to reconnect in ${delay / 1000} seconds... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
 
   retryTimeout = setTimeout(() => {
     retryCount++;

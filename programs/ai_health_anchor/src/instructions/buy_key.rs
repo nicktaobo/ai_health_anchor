@@ -61,7 +61,6 @@ pub fn buy_key(ctx: Context<BuyKey>, count: u64, referral_key: Option<Pubkey>) -
     let cpi_ctx = CpiContext::new(cpi_program, transfer_api_accounts);
     transfer_checked(cpi_ctx, pay_amount, ctx.accounts.usdt_mint.decimals)?;
 
-    // msg!("Greetings from: {:?}", ctx.program_id);
     Ok(())
 }
 

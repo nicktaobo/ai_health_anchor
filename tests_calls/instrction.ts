@@ -4,18 +4,19 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, createMint, getAssociatedTokenAddressSync,
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import { transferToken } from "../tests/utils";
-import { devAccount, init, initUsers } from "./common";
+import { devAccount, init, initUsers, localAccount } from "./common";
 
 const TOKEN_PROGRAM: typeof TOKEN_2022_PROGRAM_ID | typeof TOKEN_PROGRAM_ID =
   TOKEN_2022_PROGRAM_ID;
 
 
-const { usdt_mint, han_mint} = devAccount();
+// const { usdt_mint, han_mint} = devAccount();
+const { usdt_mint, han_mint} = localAccount();
 
 
 
 const { deployer, buyer } = initUsers();
-// 设置 Anchor provider 和 workspace
+// set Anchor provider and workspace
 const { connection, program } = init();
 
 
@@ -96,6 +97,7 @@ async function start() {
   const tx = await program.methods
   .start()
   .accounts({
+    // @ts-expect-error Type error in anchor dependency
     authority: deployer.publicKey,
     gameConfig: game_config,
   }).signers([deployer])
@@ -174,8 +176,8 @@ async function reward(user: Keypair, amount: number) {
   .reward(new BN(amount))
   .accounts({
     user: user.publicKey,
-    authority: deployer.publicKey,
     // @ts-expect-error Type error in anchor dependency
+    authority: deployer.publicKey,
     userAccount: user_account,
     gameConfig: game_config,
   })
@@ -204,8 +206,8 @@ async function rewardHan(user: Keypair, amount: number) {
   .rewardHan(new BN(amount))
   .accounts({
     user: user.publicKey,
-    authority: deployer.publicKey,
     // @ts-expect-error Type error in anchor dependency
+    authority: deployer.publicKey,
     userAccount: user_account,
     gameConfig: game_config,
   })
@@ -329,14 +331,14 @@ async function preAllToken() {
 
 
 // createMintToken()
-// 把mint地址修改成usdt地址
+// change mint address to usdt address
 
 
 
-// preAllToken()
+preAllToken()
 
 // InitGameConfig()
-start()
+// start()
 // buyKey(deployer, 5, buyer.publicKey)
 // buyKey(deployer, 10)
 // buyKey(buyer, 5)
@@ -350,6 +352,6 @@ start()
 // claimHan(buyer)
 
 
-// stop()
+stop()
 
 // claim(buyer)
