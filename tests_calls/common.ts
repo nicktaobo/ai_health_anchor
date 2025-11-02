@@ -6,21 +6,31 @@ import fs from "fs";
 import * as anchor from "@coral-xyz/anchor";
 import { BUYER_PATH, DEPLOYER_PATH } from "../.env/env";
 
+// load env variables
+// let ENV = "localhost"
+let ENV = "dev"
 
-// local env variables
-const entryPoint = "http://localhost:8899";
-// devnet env variables
-// const entryPoint = clusterApiUrl("devnet");
 const deployer_path = DEPLOYER_PATH;
 const buyer_path = BUYER_PATH;
-
-
-
 const { deployer } = initUsers();
 
 export function covertStringToUint8array(str: string): Uint8Array {
-    let hex = bs58.decode(str);
-    return new Uint8Array(hex);
+  let hex = bs58.decode(str);
+  return new Uint8Array(hex);
+}
+
+export function LoadConfig() {
+  if (ENV === "localhost") {
+    const entryPoint = "http://localhost:8899";
+    const usdt_mint = new PublicKey("HxrAWMH9Vc23kVVVrkoLuZs3jnuYF6xjMT44UDmqb9Fe");
+    const han_mint = new PublicKey("9E3v6uoi6TVpzfg6MwrDKkxcBqzmLLhv3cQicFgBm3Sr");
+    return { entryPoint, usdt_mint, han_mint };
+  } else if (ENV === "dev") {
+    const entryPoint = clusterApiUrl("devnet");
+    const usdt_mint = new PublicKey("4Q1mWwJoEcBY3REVnXCMGGHf5avYBxWAWT7jybNHUicx");
+    const han_mint = new PublicKey("7U8qShkYTDfJVQGcoPzTgMXygQTuGDu9RxF5ZA3UX581");
+    return { entryPoint, usdt_mint, han_mint };
+  }
 }
 
 
@@ -32,27 +42,16 @@ export function initUsers(): { deployer: Keypair, buyer: Keypair } {
 }
 
 export function init() {
-  const connection = new Connection(entryPoint, "confirmed");
+  const connection = new Connection(LoadConfig().entryPoint, "confirmed");
   const wallet = new anchor.Wallet(deployer);
   const provider = new anchor.AnchorProvider(connection, wallet, {});
   anchor.setProvider(provider);
-  
+
   const idl = require("../target/idl/ai_health_anchor.json");
   const program = new Program(idl, provider) as Program<AiHealthAnchor>;
- 
-  return { connection, wallet, provider, program};
+
+  return { connection, wallet, provider, program };
 }
 
-export function devAccount(){
-  const usdt_mint = new PublicKey("4Q1mWwJoEcBY3REVnXCMGGHf5avYBxWAWT7jybNHUicx");
-  const han_mint = new PublicKey("7U8qShkYTDfJVQGcoPzTgMXygQTuGDu9RxF5ZA3UX581");
-  return { usdt_mint, han_mint };
-}
-
-export function localAccount(){
-  const usdt_mint = new PublicKey("CFeicP7hjQWMn92M6UGJQ15S2nwUVcx1xvPRHBbPVsaB");
-  const han_mint = new PublicKey("7Rf8RpW2Xsur5jtqSSxKzVe8JTXtPLMadck26pbdPQuL");
-  return { usdt_mint, han_mint };
-}
 
 

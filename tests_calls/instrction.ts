@@ -4,15 +4,13 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, createMint, getAssociatedTokenAddressSync,
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import { transferToken } from "../tests/utils";
-import { devAccount, init, initUsers, localAccount } from "./common";
+import { LoadConfig, init, initUsers } from "./common";
 
 const TOKEN_PROGRAM: typeof TOKEN_2022_PROGRAM_ID | typeof TOKEN_PROGRAM_ID =
   TOKEN_2022_PROGRAM_ID;
 
 
-// const { usdt_mint, han_mint} = devAccount();
-const { usdt_mint, han_mint} = localAccount();
-
+const { usdt_mint, han_mint } = LoadConfig();
 
 
 const { deployer, buyer } = initUsers();
@@ -333,25 +331,17 @@ async function preAllToken() {
 // createMintToken()
 // change mint address to usdt address
 
-
-
-preAllToken()
-
+// preAllToken()
 // InitGameConfig()
-// start()
+start()
 // buyKey(deployer, 5, buyer.publicKey)
 // buyKey(deployer, 10)
 // buyKey(buyer, 5)
 // buyKey(buyer, 2, deployer.publicKey)
-
 // reward(buyer, 1_00000)
 // claim(buyer)
-
 // transferHan(1000_000000)
 // rewardHan(deployer, 3_000000)
 // claimHan(buyer)
-
-
-stop()
-
+// stop()
 // claim(buyer)

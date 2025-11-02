@@ -8,4 +8,5 @@ test-ledger
 *.lock
 package-lock.json
 .docs
-.env/**
+.env/
+.idea/
