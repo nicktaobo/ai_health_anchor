@@ -4,6 +4,7 @@ use crate::{error::CustomErrorCode, state::*};
 
 pub fn reward(ctx: Context<Reward>, usdt_amount: u64) -> Result<()> {
     let user_account = &mut ctx.accounts.user_account;
+    
     user_account.total_usdt_earned = user_account.total_usdt_earned.checked_add(usdt_amount).unwrap();
     Ok(())
 }

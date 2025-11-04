@@ -252,6 +252,27 @@ async function claim(user: Keypair) {
   console.log("Your transaction signature", tx);
 }
 
+async function closeUserAccount(user: Keypair) {
+  let user_account: PublicKey;
+  [user_account] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("user_account"),
+      user.publicKey.toBuffer(),
+    ],
+    program.programId
+  )
+  const tx = await program.methods
+  .closeUserAccount()
+  .accounts({
+    user: deployer.publicKey,
+    // @ts-expect-error Type error in anchor dependency
+    userAccount: user_account,
+  })
+  .signers([deployer])
+  .rpc({commitment: "confirmed"});
+  console.log("Your transaction signature", tx);
+}
+
 async function claimHan(user: Keypair) {
   let user_account: PublicKey;
   [user_account] = PublicKey.findProgramAddressSync(
@@ -333,7 +354,7 @@ async function preAllToken() {
 
 // preAllToken()
 // InitGameConfig()
-start()
+// start()
 // buyKey(deployer, 5, buyer.publicKey)
 // buyKey(deployer, 10)
 // buyKey(buyer, 5)
@@ -342,6 +363,8 @@ start()
 // claim(buyer)
 // transferHan(1000_000000)
 // rewardHan(deployer, 3_000000)
-// claimHan(buyer)
+claimHan(deployer)
 // stop()
 // claim(buyer)
+
+// closeUserAccount(buyer);

@@ -15,3 +15,6 @@ pub use stop::*;
 
 pub mod start;
 pub use start::*;
+
+pub mod close_user_account;
+pub use close_user_account::*;

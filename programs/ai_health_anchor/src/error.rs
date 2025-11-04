@@ -34,4 +34,7 @@ pub enum CustomErrorCode {
 
     #[msg("Not over end time")]
     NotOverEndTime,
+    
+    #[msg("Remaining balance")]
+    Remainingbalance
 }

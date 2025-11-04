@@ -8,8 +8,8 @@ pub mod constants;
 
 use instructions::*;
 pub use constants::*;
-
-declare_id!("Agi8rXF8h4GVFjK3eiExRE3w448H1FM3BNNMop485RQv");
+// 8XEpLZoHkfLFLDM31oLhBD5EpDQTFeFRXmFgrKWarH71
+declare_id!("6yvNHJHMJUf1XJ9bAg9hiRCXaaSgThWzUpsRpf1dWiey");
 
 #[program]
 pub mod ai_health_anchor {
@@ -46,6 +46,10 @@ pub mod ai_health_anchor {
 
     pub fn stop(ctx: Context<Stop>) -> Result<()> {
         stop::stop(ctx)
+    }
+
+    pub fn close_user_account(ctx: Context<CloseUserAccount>) -> Result<()> {
+        close_user_account::close_user_account(ctx)
     }
 
 }

@@ -1,11 +1,12 @@
-import { Keypair, PublicKey } from "@solana/web3.js";
-import { init} from "./common";
+import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import { init, initUsers} from "./common";
 import * as anchor from "@coral-xyz/anchor";
-import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { closeAccount, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 
 const { connection, program } = init();
 
+const {deployer, buyer } = initUsers();
 
 export async function fetchGameConfig() {
     const [gameConfig] = PublicKey.findProgramAddressSync(
@@ -46,12 +47,12 @@ export async function fetchConfig() {
     console.log("authority", config.authority.toBase58());
 }
 
-export async function fetchUserAccount(user: Keypair) {
+export async function fetchUserAccount(user: PublicKey) {
     let user_account: PublicKey;
     [user_account] = PublicKey.findProgramAddressSync(
         [
             Buffer.from("user_account"),
-            user.publicKey.toBuffer(),
+            user.toBuffer(),
         ],
         program.programId
     );
@@ -102,6 +103,16 @@ export async function fetchTreasuryHanBalance() {
     console.log("treasuryHanBalance", treasuryHanBalance);
 }
 
+export async function fetchUserUsdtBalance(user: Keypair, usdt_mint: PublicKey) {
+    let user_usdt_account = getAssociatedTokenAddressSync(
+        usdt_mint,
+        user.publicKey,
+        false,
+        TOKEN_PROGRAM_ID
+    );
+    const userUsdtBalance = await getTokenBalance(connection, user_usdt_account);
+    console.log("userUsdtBalance:", user_usdt_account.toBase58(), "balance:", userUsdtBalance);
+}
 
 
 export async function getTokenBalance(
@@ -131,13 +142,33 @@ function getBuyerTokenAccount(user: Keypair, mint: PublicKey): PublicKey {
     return user_token_account;
 }
 
+export async function getSolBalance(
+    connection: anchor.web3.Connection,
+    publicKey: PublicKey
+  ): Promise<number> {
+    try {
+      const balance = await connection.getBalance(publicKey);
+      return balance / LAMPORTS_PER_SOL;
+    } catch (error) {
+      console.error("获取 SOL 余额失败:", error);
+      return 0;
+    }
+  }
+
 // fetchGameConfig();
-fetchConfig();
+// fetchConfig();
 // fetchAllUser();
-// fetchUserAccount(buyer);
+fetchUserAccount(new PublicKey("ANU1sBoytR2a8tpvMFygMXg5M6XZipyiZVwrhwUmKvQV"));
 
 // fetchTreasuryUsdtBalance();
 // fetchTreasuryUsdtBalance();
 // fetchTreasuryHanBalance();
 
 // getTokenBalance(connection, getBuyerTokenAccount(buyer, han_mint));
+
+// getSolBalance(connection, buyer.publicKey).then(balance => {
+//     console.log("buyerSolBalance:", balance);
+// });
+
+
+
