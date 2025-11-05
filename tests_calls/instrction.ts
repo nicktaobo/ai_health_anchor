@@ -252,26 +252,26 @@ async function claim(user: Keypair) {
   console.log("Your transaction signature", tx);
 }
 
-async function closeUserAccount(user: Keypair) {
-  let user_account: PublicKey;
-  [user_account] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("user_account"),
-      user.publicKey.toBuffer(),
-    ],
-    program.programId
-  )
-  const tx = await program.methods
-  .closeUserAccount()
-  .accounts({
-    user: deployer.publicKey,
-    // @ts-expect-error Type error in anchor dependency
-    userAccount: user_account,
-  })
-  .signers([deployer])
-  .rpc({commitment: "confirmed"});
-  console.log("Your transaction signature", tx);
-}
+// async function closeUserAccount(user: Keypair) {
+//   let user_account: PublicKey;
+//   [user_account] = PublicKey.findProgramAddressSync(
+//     [
+//       Buffer.from("user_account"),
+//       user.publicKey.toBuffer(),
+//     ],
+//     program.programId
+//   )
+//   const tx = await program.methods
+//   .closeUserAccount()
+//   .accounts({
+//     user: deployer.publicKey,
+//     // @ts-expect-error Type error in anchor dependency
+//     userAccount: user_account,
+//   })
+//   .signers([deployer])
+//   .rpc({commitment: "confirmed"});
+//   console.log("Your transaction signature", tx);
+// }
 
 async function claimHan(user: Keypair) {
   let user_account: PublicKey;
@@ -336,6 +336,17 @@ async function transferHan(amount: number) {
 }
 
 
+async function createUserAccount(user: Keypair) {
+  const tx = await program.methods
+  .createUserAccount()
+  .accounts({
+    user: user.publicKey,
+  })
+  .signers([user])
+  .rpc({commitment: "confirmed"});
+  console.log("Your transaction signature", tx);
+
+}
 
 
 
@@ -362,8 +373,11 @@ async function preAllToken() {
 // reward(buyer, 1_00000)
 // claim(buyer)
 // transferHan(1000_000000)
-// rewardHan(deployer, 3_000000)
-claimHan(deployer)
+
+// createUserAccount(buyer)
+
+// rewardHan(buyer, 2_000000)
+claimHan(buyer)
 // stop()
 // claim(buyer)
 

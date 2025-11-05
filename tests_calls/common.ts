@@ -22,8 +22,8 @@ export function covertStringToUint8array(str: string): Uint8Array {
 export function LoadConfig() {
   if (ENV === "localhost") {
     const entryPoint = "http://localhost:8899";
-    const usdt_mint = new PublicKey("ABBRX5RwjTbPkzNBfQLVzvcsXzQCE9mFfhELWzBnxepM");
-    const han_mint = new PublicKey("Gq5zzGUEV9rXaBfXgkdgvbY8StvGJLWhfWQaB5ZXWyDZ");
+    const usdt_mint = new PublicKey("5LGZWKPYoLHsaxo4Mg5q1oSt4tsuxjotBY99KA5fQGew");
+    const han_mint = new PublicKey("6CSmMXsiXG9kBrmynfi9cd6rw6PGeybsuApmPXea2EV4");
     return { entryPoint, usdt_mint, han_mint };
   } else if (ENV === "dev") {
     const entryPoint = clusterApiUrl("devnet");

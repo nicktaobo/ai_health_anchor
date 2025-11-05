@@ -25,6 +25,9 @@ pub enum CustomErrorCode {
 
     #[msg("Invalid round number")]
     InvalidRoundNumber,
+    
+    #[msg("Reward less than total earned")]
+    RewardLessThanTotalEarned,
 
     #[msg("Invalid state")]
     InvalidState,

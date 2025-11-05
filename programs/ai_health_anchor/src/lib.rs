@@ -48,10 +48,9 @@ pub mod ai_health_anchor {
         stop::stop(ctx)
     }
 
-    pub fn close_user_account(ctx: Context<CloseUserAccount>) -> Result<()> {
-        close_user_account::close_user_account(ctx)
+    pub fn create_user_account(ctx: Context<CreateUserAccount>) -> Result<()> {
+        user_account::create_user_account(ctx)
     }
-
 }
 
 

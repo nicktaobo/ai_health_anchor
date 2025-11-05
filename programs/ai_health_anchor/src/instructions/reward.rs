@@ -4,14 +4,13 @@ use crate::{error::CustomErrorCode, state::*};
 
 pub fn reward(ctx: Context<Reward>, usdt_amount: u64) -> Result<()> {
     let user_account = &mut ctx.accounts.user_account;
-    
-    user_account.total_usdt_earned = user_account.total_usdt_earned.checked_add(usdt_amount).unwrap();
+    user_account.total_usdt_earned = usdt_amount;
     Ok(())
 }
 
 pub fn reward_han(ctx: Context<RewardHan>, han_amount: u64) -> Result<()> {
     let user_account = &mut ctx.accounts.user_account;
-    user_account.total_han_earned = user_account.total_han_earned.checked_add(han_amount).unwrap();
+    user_account.total_han_earned = han_amount;
     Ok(())
 }
 
@@ -25,7 +24,7 @@ pub struct Reward<'info> {
     #[account(
         mut,
         seeds = [b"user_account", user.key().as_ref()],
-        bump = user_account.bump,
+        bump,
     )]
     pub user_account: Account<'info, UserAccount>,
 
@@ -51,7 +50,7 @@ pub struct RewardHan<'info> {
     #[account(
         mut,
         seeds = [b"user_account", user.key().as_ref()],
-        bump = user_account.bump,
+        bump,
     )]
     pub user_account: Account<'info, UserAccount>,
 

@@ -63,6 +63,8 @@ export async function fetchUserAccount(user: PublicKey) {
     console.log("totalUsdtSpent", userAccount.totalUsdtSpent.toNumber());
     console.log("totalUsdtEarned", userAccount.totalUsdtEarned.toNumber());
     console.log("totalWithdrawnUsdt", userAccount.totalWithdrawnUsdt.toNumber());
+    console.log("totalHanEarned", userAccount.totalHanEarned.toNumber());
+    console.log("totalWithdrawnHan", userAccount.totalWithdrawnHan.toNumber());
     console.log("lastKeyPurchaseTime", userAccount.lastKeyPurchaseTime.toNumber());
     console.log("bump", userAccount.bump);
 }
@@ -158,7 +160,7 @@ export async function getSolBalance(
 // fetchGameConfig();
 // fetchConfig();
 // fetchAllUser();
-fetchUserAccount(new PublicKey("ANU1sBoytR2a8tpvMFygMXg5M6XZipyiZVwrhwUmKvQV"));
+fetchUserAccount(buyer.publicKey);
 
 // fetchTreasuryUsdtBalance();
 // fetchTreasuryUsdtBalance();
