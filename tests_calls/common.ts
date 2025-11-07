@@ -7,8 +7,8 @@ import * as anchor from "@coral-xyz/anchor";
 import { BUYER_PATH, DEPLOYER_PATH } from "../.env/env";
 
 // load env variables
-let ENV = "localhost"
-// let ENV = "dev"
+// let ENV = "localhost"
+let ENV = "dev"
 
 const deployer_path = DEPLOYER_PATH;
 const buyer_path = BUYER_PATH;
@@ -22,8 +22,8 @@ export function covertStringToUint8array(str: string): Uint8Array {
 export function LoadConfig() {
   if (ENV === "localhost") {
     const entryPoint = "http://localhost:8899";
-    const usdt_mint = new PublicKey("5LGZWKPYoLHsaxo4Mg5q1oSt4tsuxjotBY99KA5fQGew");
-    const han_mint = new PublicKey("6CSmMXsiXG9kBrmynfi9cd6rw6PGeybsuApmPXea2EV4");
+    const usdt_mint = new PublicKey("8RexQNakJhuQHQgebHPLrNcPtG2kaXSdtUMPQFm58Z3h");
+    const han_mint = new PublicKey("AyJ5nxziqWq2YHCxTTEmnePdMSDyH1QvVT2QPQo33opq");
     return { entryPoint, usdt_mint, han_mint };
   } else if (ENV === "dev") {
     const entryPoint = clusterApiUrl("devnet");
@@ -49,7 +49,7 @@ export function init() {
 
   const idl = require("../target/idl/ai_health_anchor.json");
   // const program = new Program(idl, provider) as Program<AiHealthAnchor>;
-  // 获取program 通过id
+  // get program by idl
   // const program = anchor.workspace.aiHealthAnchor as Program<AiHealthAnchor>;
   const program = new Program(idl, provider) as Program<AiHealthAnchor>;
 

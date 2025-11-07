@@ -8,12 +8,11 @@ export async function getTokenBalance(
 ): Promise<number> {
   try {
     const info = await connection.getTokenAccountBalance(tokenAccount);
-    if (info.value.uiAmount == null) throw new Error('未找到余额');
-    // console.log('余额 (使用 Solana-Web3.js): ', info.value.uiAmount);
-    console.log('余额 (使用 Solana-Web3.js): ', JSON.stringify(info, null, 2));
+    if (info.value.uiAmount == null) throw new Error('token balance not found');
+    console.log('token balance: ', JSON.stringify(info, null, 2));
     return info.value.uiAmount;
   } catch (error) {
-    console.error("获取代币余额失败:", error);
+    console.error("getTokenBalance error:", error);
     return 0;
   }
 }
@@ -49,7 +48,7 @@ export async function getSolBalance(
     const balance = await connection.getBalance(publicKey);
     return balance / LAMPORTS_PER_SOL;
   } catch (error) {
-    console.error("获取 SOL 余额失败:", error);
+    console.error("getSolBalance error:", error);
     return 0;
   }
 }

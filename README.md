@@ -9,6 +9,7 @@ A Solana Anchor program showcasing health-related on-chain logic with TypeScript
   - `instructions/buy_key.rs`: purchase/register a key (example)
   - `instructions/reward.rs`: reward/points issuance logic
   - `instructions/claim.rs`: claim/settlement logic
+  - `instructions/user_account.rs`: create_account logic
 - Generated IDL: `target/idl/ai_health_anchor.json`
 - TypeScript client types: `target/types/ai_health_anchor.ts`
 - Tests and scripts:

@@ -21,7 +21,7 @@ pub fn initialize_config(ctx: Context<InitializeConfig>) -> Result<()> {
 #[derive(Accounts)]
 pub struct InitializeConfig<'info> {
     #[account(mut)]
-    pub authority: Signer<'info>, // 合約管理者
+    pub authority: Signer<'info>,
 
     #[account(
         init,

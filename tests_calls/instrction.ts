@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from "@coral-xyz/anchor";
-import { ASSOCIATED_TOKEN_PROGRAM_ID, createMint, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo, NATIVE_MINT, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, tokenMetadataInitialize} from "@solana/spl-token"
+import { ASSOCIATED_TOKEN_PROGRAM_ID, createMint, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo, NATIVE_MINT, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, tokenMetadataInitialize } from "@solana/spl-token"
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 import { transferToken } from "../tests/utils";
@@ -26,7 +26,7 @@ export async function transferSol(
   amount: number
 ): Promise<void> {
   const commitBlockhashWithContext = await connection.getLatestBlockhash();
-  let commitTx  = new anchor.web3.Transaction(
+  let commitTx = new anchor.web3.Transaction(
     {
       feePayer: from.publicKey,
       blockhash: commitBlockhashWithContext.blockhash,
@@ -39,48 +39,48 @@ export async function transferSol(
       lamports: amount * LAMPORTS_PER_SOL,
     })
   );
-  const commitTxSignature = await anchor.web3.sendAndConfirmTransaction(connection, commitTx, [from], {skipPreflight: true, commitment: "confirmed"});
+  const commitTxSignature = await anchor.web3.sendAndConfirmTransaction(connection, commitTx, [from], { skipPreflight: true, commitment: "confirmed" });
   console.log("commitTxSignature", commitTxSignature);
 }
 
 
 
 async function createMintToken() {
-     const usdt_mint = await createMint(connection, deployer, deployer.publicKey, null, 6, Keypair.generate(), {skipPreflight: true});
-     console.info("usdt_mint", usdt_mint);
-     const han_mint = await createMint(connection, deployer, deployer.publicKey, null, 6, Keypair.generate(), {skipPreflight: true});
-     console.info("han_mint", han_mint);
+  const usdt_mint = await createMint(connection, deployer, deployer.publicKey, null, 6, Keypair.generate(), { skipPreflight: true });
+  console.info("usdt_mint", usdt_mint);
+  const han_mint = await createMint(connection, deployer, deployer.publicKey, null, 6, Keypair.generate(), { skipPreflight: true });
+  console.info("han_mint", han_mint);
 }
 
 async function InitTokenAccount(user: Keypair, mint: PublicKey) {
-     const token_account = await getOrCreateAssociatedTokenAccount(
-        connection,
-        deployer,
-        mint,
-        user.publicKey,
-        false,
-        "confirmed",
-        { skipPreflight: false },
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
-    );
-    console.info("token_account", token_account);
-    let tx = await mintTo(connection, deployer, mint, token_account.address, deployer, 1000000_000000, [], { skipPreflight: false }, TOKEN_PROGRAM_ID);
-    console.info("tx", tx);
+  const token_account = await getOrCreateAssociatedTokenAccount(
+    connection,
+    deployer,
+    mint,
+    user.publicKey,
+    false,
+    "confirmed",
+    { skipPreflight: false },
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  );
+  console.info("token_account", token_account);
+  let tx = await mintTo(connection, deployer, mint, token_account.address, deployer, 1000000_000000, [], { skipPreflight: false }, TOKEN_PROGRAM_ID);
+  console.info("tx", tx);
 }
 
 
 
 async function InitGameConfig() {
   const tx = await program.methods
-  .initializeConfig()
-  .accounts({
+    .initializeConfig()
+    .accounts({
       authority: deployer.publicKey,
       usdtMint: usdt_mint,
       hanMint: han_mint,
       tokenProgram: TOKEN_PROGRAM_ID,
-  }).signers([deployer])
-  .rpc({commitment: "confirmed"});
+    }).signers([deployer])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 }
 
@@ -93,64 +93,64 @@ async function start() {
     program.programId
   )
   const tx = await program.methods
-  .start()
-  .accounts({
-    // @ts-expect-error Type error in anchor dependency
-    authority: deployer.publicKey,
-    gameConfig: game_config,
-  }).signers([deployer])
-  .rpc({commitment: "confirmed"});
+    .start()
+    .accounts({
+      // @ts-expect-error Type error in anchor dependency
+      authority: deployer.publicKey,
+      gameConfig: game_config,
+    }).signers([deployer])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 }
 
 
 
 async function buyKey(user: Keypair, count: number, referral_key?: PublicKey | null) {
-    let buyer_user_account: PublicKey;
-    [buyer_user_account] = PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("user_account"),
-        user.publicKey.toBuffer(),
-      ],
-      program.programId
-    )
-    let treasury_usdt_account: PublicKey;
-    [treasury_usdt_account] = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("treasury_usdt_account"),
-        ],
-        program.programId
-    );
+  let buyer_user_account: PublicKey;
+  [buyer_user_account] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("user_account"),
+      user.publicKey.toBuffer(),
+    ],
+    program.programId
+  )
+  let treasury_usdt_account: PublicKey;
+  [treasury_usdt_account] = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("treasury_usdt_account"),
+    ],
+    program.programId
+  );
 
-    let usdt_token_account = getAssociatedTokenAddressSync(
-        usdt_mint,
-        user.publicKey,
-        false,
-        TOKEN_PROGRAM_ID
-    )
-    console.info("token_account", usdt_token_account);
+  let usdt_token_account = getAssociatedTokenAddressSync(
+    usdt_mint,
+    user.publicKey,
+    false,
+    TOKEN_PROGRAM_ID
+  )
+  console.info("token_account", usdt_token_account);
 
-    // 根据是否有 referral_key 动态构建方法参数
-    const methodBuilder = referral_key
-      ? program.methods.buyKey(new BN(count), referral_key)
-      : program.methods.buyKey(new BN(count), null);
-    
+  // build method parameters dynamically based on whether there is a referral_key
+  const methodBuilder = referral_key
+    ? program.methods.buyKey(new BN(count), referral_key)
+    : program.methods.buyKey(new BN(count), null);
 
-    const tx = await methodBuilder
-      .accounts({
-        user: user.publicKey,
-        usdtMint: usdt_mint,
-        // @ts-expect-error Type error in anchor dependency
-        userUsdtAccount: usdt_token_account,
-        userAccount: buyer_user_account,
-        treasuryUsdtAccount: treasury_usdt_account,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([user])
-      .rpc({commitment: "confirmed"});
-    
-    console.log("Your transaction signature", tx);
-    
+
+  const tx = await methodBuilder
+    .accounts({
+      user: user.publicKey,
+      usdtMint: usdt_mint,
+      // @ts-expect-error Type error in anchor dependency
+      userUsdtAccount: usdt_token_account,
+      userAccount: buyer_user_account,
+      treasuryUsdtAccount: treasury_usdt_account,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    })
+    .signers([user])
+    .rpc({ commitment: "confirmed" });
+
+  console.log("Your transaction signature", tx);
+
 }
 
 async function reward(user: Keypair, amount: number) {
@@ -171,16 +171,16 @@ async function reward(user: Keypair, amount: number) {
   )
 
   const tx = await program.methods
-  .reward(new BN(amount))
-  .accounts({
-    user: user.publicKey,
-    // @ts-expect-error Type error in anchor dependency
-    authority: deployer.publicKey,
-    userAccount: user_account,
-    gameConfig: game_config,
-  })
-  .signers([deployer])
-  .rpc({commitment: "confirmed"});
+    .reward(new BN(amount))
+    .accounts({
+      user: user.publicKey,
+      // @ts-expect-error Type error in anchor dependency
+      authority: deployer.publicKey,
+      userAccount: user_account,
+      gameConfig: game_config,
+    })
+    .signers([deployer])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 }
 
@@ -201,16 +201,16 @@ async function rewardHan(user: Keypair, amount: number) {
     program.programId
   )
   const tx = await program.methods
-  .rewardHan(new BN(amount))
-  .accounts({
-    user: user.publicKey,
-    // @ts-expect-error Type error in anchor dependency
-    authority: deployer.publicKey,
-    userAccount: user_account,
-    gameConfig: game_config,
-  })
-  .signers([deployer])
-  .rpc({commitment: "confirmed"});
+    .rewardHan(new BN(amount))
+    .accounts({
+      user: user.publicKey,
+      // @ts-expect-error Type error in anchor dependency
+      authority: deployer.publicKey,
+      userAccount: user_account,
+      gameConfig: game_config,
+    })
+    .signers([deployer])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 }
 
@@ -237,18 +237,18 @@ async function claim(user: Keypair) {
     TOKEN_PROGRAM_ID
   )
   const tx = await program.methods
-  .claim()
-  .accounts({
-    user: user.publicKey,
-    // @ts-expect-error Type error in anchor dependency
-    userAccount: user_account,
-    userUsdtAccount: usdt_token_account,
-    treasuryUsdtAccount: treasury_usdt_account,
-    usdtMint: usdt_mint,
-    tokenProgram: TOKEN_PROGRAM_ID,
-  })
-  .signers([user])
-  .rpc({commitment: "confirmed"});
+    .claim()
+    .accounts({
+      user: user.publicKey,
+      // @ts-expect-error Type error in anchor dependency
+      userAccount: user_account,
+      userUsdtAccount: usdt_token_account,
+      treasuryUsdtAccount: treasury_usdt_account,
+      usdtMint: usdt_mint,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    })
+    .signers([user])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 }
 
@@ -295,31 +295,31 @@ async function claimHan(user: Keypair) {
     false,
     TOKEN_PROGRAM_ID
   )
-  
+
   const tx = await program.methods
-  .claimHan()
-  .accounts({
-    user: user.publicKey,
-  // @ts-expect-error Type error in anchor dependency
-    userAccount: user_account,
-    userHanAccount: han_token_account,
-    treasuryHanAccount: treasury_han_account,
-    hanMint: han_mint,
-    tokenProgram: TOKEN_PROGRAM_ID,
-  })
-  .signers([user])
-  .rpc({commitment: "confirmed"});
+    .claimHan()
+    .accounts({
+      user: user.publicKey,
+      // @ts-expect-error Type error in anchor dependency
+      userAccount: user_account,
+      userHanAccount: han_token_account,
+      treasuryHanAccount: treasury_han_account,
+      hanMint: han_mint,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    })
+    .signers([user])
+    .rpc({ commitment: "confirmed" });
 
   console.log("Your transaction signature", tx);
 }
 
 async function stop() {
   const tx = await program.methods
-  .stop()
-  .accounts({
-    authority: deployer.publicKey,
-  }).signers([deployer])
-  .rpc({commitment: "confirmed"});
+    .stop()
+    .accounts({
+      authority: deployer.publicKey,
+    }).signers([deployer])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 }
 
@@ -338,12 +338,12 @@ async function transferHan(amount: number) {
 
 async function createUserAccount(user: Keypair) {
   const tx = await program.methods
-  .createUserAccount()
-  .accounts({
-    user: user.publicKey,
-  })
-  .signers([user])
-  .rpc({commitment: "confirmed"});
+    .createUserAccount()
+    .accounts({
+      user: user.publicKey,
+    })
+    .signers([user])
+    .rpc({ commitment: "confirmed" });
   console.log("Your transaction signature", tx);
 
 }
@@ -377,8 +377,10 @@ async function preAllToken() {
 // createUserAccount(buyer)
 
 // rewardHan(buyer, 2_000000)
-claimHan(buyer)
+// claimHan(buyer)
 // stop()
 // claim(buyer)
 
 // closeUserAccount(buyer);
+
+// [ 14, 129, 64, 211, 185, 4, 12, 239, 227, 202, 75, 91, 191, 15, 207, 52, 145, 19, 139, 129, 22, 240, 48, 80, 6, 218, 50, 99, 224, 133, 101, 220, 250, 57, 205, 75, 29, 90, 207, 83, 84, 183, 14, 189, 94, 16, 41, 239, 147, 59, 15, 91, 130, 90, 153, 231, 131, 140, 23, 43, 224, 106, 35, 62 ];

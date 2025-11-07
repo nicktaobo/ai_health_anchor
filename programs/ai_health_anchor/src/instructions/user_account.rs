@@ -13,8 +13,6 @@ pub struct CreateUserAccount<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
 
-    pub system_program: Program<'info, System>,
-
     #[account(
         init_if_needed,
         payer = user,
@@ -23,4 +21,7 @@ pub struct CreateUserAccount<'info> {
         bump,
     )]
     pub user_account: Account<'info, UserAccount>,
+
+    pub system_program: Program<'info, System>,
+
 }

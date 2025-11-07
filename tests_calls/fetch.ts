@@ -152,7 +152,7 @@ export async function getSolBalance(
       const balance = await connection.getBalance(publicKey);
       return balance / LAMPORTS_PER_SOL;
     } catch (error) {
-      console.error("获取 SOL 余额失败:", error);
+      console.error("getSolBalance error:", error);
       return 0;
     }
   }
@@ -160,7 +160,8 @@ export async function getSolBalance(
 // fetchGameConfig();
 // fetchConfig();
 // fetchAllUser();
-fetchUserAccount(buyer.publicKey);
+// fetchUserAccount(buyer.publicKey);
+fetchUserAccount(new PublicKey("ANU1sBoytR2a8tpvMFygMXg5M6XZipyiZVwrhwUmKvQV"));
 
 // fetchTreasuryUsdtBalance();
 // fetchTreasuryUsdtBalance();
